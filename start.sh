@@ -50,12 +50,16 @@ echo ""
 echo "Press Ctrl+C to stop both servers"
 echo ""
 
-# Start both servers
-cd backend && npm start &
+# Start Backend (using dev script for nodemon)
+cd backend && npm run dev &
 BACKEND_PID=$!
 
-cd ../frontend && npm start &
+# Start Frontend (using dev script for vite)
+cd frontend && npm run dev &
 FRONTEND_PID=$!
+
+# Handle shutdown
+trap "kill $BACKEND_PID $FRONTEND_PID; exit" SIGINT SIGTERM
 
 # Wait for both processes
 wait $BACKEND_PID $FRONTEND_PID
