@@ -1,11 +1,134 @@
 /* */
+.phase-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 
-/* ... previous styles ... */
+/* Original Video Embed (Small) - Kept for backward compatibility if needed */
+.video-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
 
-/* 1. Enlarged Video Container */
+.video-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Questions Grid */
+.questions-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Phase Info */
+.phase-info {
+  margin-top: 1rem;
+}
+
+.info-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-blue);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.info-card h4 {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-card li {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.info-card li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+/* --- NEW STYLES BELOW --- */
+
+/* Submit / Next / Launch Buttons */
+.submit-answer-btn {
+  background: var(--accent-blue);
+  color: #0a0e1a;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 184, 255, 0.3);
+}
+
+.submit-answer-btn:hover {
+  background: var(--accent-green);
+  box-shadow: 0 0 20px var(--glow-green);
+  transform: translateY(-2px);
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enlarged Video Container */
 .video-embed-large {
   width: 100%;
-  height: 400px; /* Significantly larger */
+  height: 400px;
   border-radius: 12px;
   overflow: hidden;
   border: 2px solid var(--accent-blue);
@@ -20,7 +143,7 @@
   border: none;
 }
 
-/* Market Live State */
+/* Market Live State Overlay */
 .market-live-state {
   background: var(--bg-secondary);
   border: 1px solid var(--accent-green);
@@ -73,17 +196,77 @@
   box-shadow: 0 0 15px rgba(0, 184, 255, 0.2);
 }
 
-.submit-answer-btn {
-  /* Ensure this exists from previous steps */
-  background: var(--accent-blue);
-  color: #0a0e1a;
+/* Locked Graph Placeholder (moved from App.css or new) */
+.locked-graph-placeholder {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.lock-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Button Group for Prev/Next */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.nav-btn {
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
   padding: 1rem 2rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  width: 100%;
-  margin-top: 1.5rem;
   font-size: 1rem;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.prev-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.prev-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.next-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.next-btn:hover {
+  background: rgba(0, 184, 255, 0.1);
+}
+
+.launch-btn {
+  background: var(--accent-blue);
+  color: #0a0e1a;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 184, 255, 0.3);
+}
+
+.launch-btn:hover {
+  background: var(--accent-green);
+  box-shadow: 0 0 20px var(--glow-green);
+  transform: translateY(-2px);
 }

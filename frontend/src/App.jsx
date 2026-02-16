@@ -1,8 +1,9 @@
+//
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Phase1 from './phases/Phase1';
-import Phase2 from './phases/Phase2'; // Assumed to be similar refactor or kept simple
-import Phase3 from './phases/Phase3'; // Assumed to be similar
+import Phase2 from './phases/Phase2';
+import Phase3 from './phases/Phase3';
 import SalesGraph from './components/SalesGraph';
 import Timer from './components/Timer';
 import NetWorthDisplay from './components/NetWorthDisplay';
@@ -18,6 +19,7 @@ function App() {
   const [salesData, setSalesData] = useState({ baseline: 1000, current: 0, history: [] });
   const [questions, setQuestions] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [marketStarted, setMarketStarted] = useState(false);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -40,18 +42,15 @@ function App() {
     if (!sessionId) return;
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
-
     ws.onopen = () => ws.send(JSON.stringify({ type: 'register', sessionId }));
-    
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'liveUpdate') {
-        // Update both sales and net worth from the heartbeat
         setSalesData(data.salesData);
         setNetWorth(data.netWorth);
+        setMarketStarted(true);
       }
     };
-
     return () => ws.close();
   }, [sessionId]);
 
@@ -64,13 +63,19 @@ function App() {
     loadQuestions();
   }, [currentPhase, sessionId]);
 
-  const handleAnswersUpdate = async (answers) => {
-    // Just update backend, don't expect sales data back immediately
-    const response = await axios.post(`${API_URL}/update-answers`, {
-      sessionId, phase: currentPhase, answers
-    });
-    // Update costs immediately for feedback
-    setNetWorth(response.data.netWorth); 
+  // UPDATED: Accepts 'launch' boolean
+  const handleAnswersUpdate = async (answers, launch = false) => {
+    try {
+      const response = await axios.post(`${API_URL}/update-answers`, {
+        sessionId,
+        phase: currentPhase,
+        answers,
+        launch // Tells backend to start market/deduct costs
+      });
+      setNetWorth(response.data.netWorth);
+    } catch (error) {
+      console.error('Error submitting answers:', error);
+    }
   };
 
   const handlePhaseComplete = async () => {
@@ -80,11 +85,21 @@ function App() {
 
   if (loading || !questions) return <div className="loading-screen">Loading...</div>;
 
+  const renderPhase = () => {
+    switch (currentPhase) {
+      case 1: return <Phase1 questions={questions} onUpdate={handleAnswersUpdate} />;
+      case 2: return <Phase2 questions={questions} onUpdate={handleAnswersUpdate} />;
+      case 3: return <Phase3 questions={questions} onUpdate={handleAnswersUpdate} />;
+      default: return <div className="completion-screen"><h1>Simulation Complete!</h1></div>;
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-left">
           <h1 className="app-title">TORC</h1>
+          <span className="app-subtitle">Market Simulator</span>
         </div>
         <div className="header-right">
           <NetWorthDisplay netWorth={netWorth} />
@@ -95,21 +110,18 @@ function App() {
       <div className="app-content">
         <div className="main-section">
           <div className="phase-indicator">
-             Phase {currentPhase}
+            <span className="phase-label">Phase {currentPhase}</span>
           </div>
-          {currentPhase === 1 && <Phase1 questions={questions} onUpdate={handleAnswersUpdate} />}
-          {currentPhase === 2 && <Phase2 questions={questions} onUpdate={handleAnswersUpdate} />}
-          {currentPhase === 3 && <Phase3 questions={questions} onUpdate={handleAnswersUpdate} />}
+          {renderPhase()}
         </div>
 
         <aside className="sidebar">
-          {/* HIDE GRAPH IN PHASE 1 */}
-          {currentPhase > 1 ? (
+          {marketStarted ? (
             <SalesGraph data={salesData} />
           ) : (
             <div className="locked-graph-placeholder">
-              <h3>Market Closed</h3>
-              <p>Complete Phase 1 to launch product</p>
+              <h3>Market Pending</h3>
+              <p>Launch strategy to view performance.</p>
             </div>
           )}
         </aside>
