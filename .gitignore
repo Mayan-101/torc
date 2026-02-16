@@ -1,4 +1,4 @@
 *.lock
 *-lock.json
 */node_modules
-*.md
+codebase.md
