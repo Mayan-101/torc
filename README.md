@@ -10,3 +10,11 @@ Changes to be made:
 1. Graphs are unrealistic change it from a sliding window to a stacking graph
 2. Algorithm in the market simulation, I need to add Unit economics of the products to giet a better estimate of the losses
 3. Phase 2 & 3 , need to implement Investor logic and features like loans
+
+
+to use this 
+Clone the repo and in the torc directory 
+```
+chmod +x ./start.sh
+./start.sh
+```
